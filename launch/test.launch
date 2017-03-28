@@ -1,0 +1,65 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+	<master auto="start"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find upo_launchers)upo_45/maps/upo_45.yaml" />
+	<node pkg="pedlab" type="pedlab" name="pedlab" output="screen" respawn="false">
+		<param name="pose_initial_x" value="37.84"/>
+		<param name="pose_initial_y" value="50.74"/>
+		<param name="pose_initial_yaw" value="0"/>
+	        <param name="robot_max_velocity" value="0.6"/>
+		<param name="config_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="teleoperated_target" value="false"/>
+		<param name="false_negative_prob" value="0.5"/>
+		<param name="noisy_detections" value="true"/>
+		<param name="sd_noise" value="0.15"/>
+	</node>
+
+	<node pkg="upo_people_tracker" type="people_tracker_node" name="people_tracker_node" output="screen" respawn="true">
+		<param name="num_detectors" type="int" value="1"/>
+	 	<param name="input_detector_topic_1" type="string" value="/tracker_node/spencer_detections"/>
+	 	<param name="tracked_persons_topic" type="string" value="/people_tracker_node/tracked_persons"/>
+	 	<param name="track_frame_id" type="string" value="/odom"/>		
+	 	<param name="init_min_confidence" type="double" value="0.2"/>
+	 	<param name="nn_max_distance" type="double" value="0.75"/>		
+	 	<param name="track_timeout" type="double" value="4.0"/>		
+	 	<param name="track_speed_var" type="double" value="0.2"/>
+	 	<param name="track_rate_var" type="double" value="0.2"/>
+	</node>
+
+	<node pkg="spencer_to_upo_people" type="spencer_to_upo_people" name="spencer_to_upo_people_nav" output="screen" >
+		<param name="upo_people_id" value="/people/navigation" />
+		<param name="publish_markers" type="bool" value="false" />
+        	<param name="use_kf" type="bool" value="false" />
+		<param name="spencer_people_id" type="str" value="/people_tracker_node/tracked_persons" />
+ 	</node>
+
+	
+	<node pkg="teresa_wsbs" type="wsbs_planner" name="wsbs_planner" output="screen" respawn="false">
+		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="people_id" value="/people/navigation"/>
+		<param name="other_people_id" value="/people/navigation"/>
+		<param name="num_particles" value="500"/>
+		<param name="planner_mode" value="1"/>
+  	</node>
+	
+
+  	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen" required="true">
+		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="cmd_vel_id" type="str" value="cmd_vel"/>
+		<param name="xtion_id" type="str" value=""/>
+		<param name="people_id" value="/people/navigation"/>
+		<param name="use_leds" type="bool" value="false"/>
+        	<param name="heuristic_controller" value="false"/>
+        	<param name="use_estimated_target" value="true"/>
+		<param name="clicked_goals" value="false"/>
+		<param name="break_if_aborted" value="true"/>
+		<param name="break_if_finished" value="true"/>
+ 	 </node>
+	
+
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find pedlab)/rviz/pedlab.rviz"/>
+
+
+</launch>
+		
