@@ -40,11 +40,11 @@
 		<param name="people_id" value="/people/navigation"/>
 		<param name="other_people_id" value="/people/navigation"/>
 		<param name="num_particles" value="500"/>
-		<param name="planner_mode" value="1"/>
+		<param name="planner_mode" value="3"/>
   	</node>
 	
-
-  	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen" required="true">
+	<!--
+	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen" required="true">
 		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
 		<param name="cmd_vel_id" type="str" value="cmd_vel"/>
 		<param name="xtion_id" type="str" value=""/>
@@ -55,6 +55,20 @@
 		<param name="clicked_goals" value="false"/>
 		<param name="break_if_aborted" value="true"/>
 		<param name="break_if_finished" value="true"/>
+ 	 </node>
+	-->
+
+  	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen">
+		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="cmd_vel_id" type="str" value="cmd_vel"/>
+		<param name="xtion_id" type="str" value=""/>
+		<param name="people_id" value="/people/navigation"/>
+		<param name="use_leds" type="bool" value="false"/>
+        	<param name="heuristic_controller" value="false"/>
+        	<param name="use_estimated_target" value="true"/>
+		<param name="clicked_goals" value="false"/>
+		<param name="break_if_aborted" value="false"/>
+		<param name="break_if_finished" value="false"/>
  	 </node>
 	
 
