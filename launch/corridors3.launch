@@ -2,13 +2,14 @@
 
 <launch>
 	<master auto="start"/>
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find upo_launchers)upo_45/maps/upo_45.yaml" />
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find pedlab)scenarios/corridors.yaml" />
 	<node pkg="pedlab" type="pedlab" name="pedlab" output="screen" respawn="false">
-		<param name="pose_initial_x" value="37.84"/>
-		<param name="pose_initial_y" value="50.74"/>
+		<param name="pose_initial_x" value="7"/>
+		<param name="pose_initial_y" value="32"/>
 		<param name="pose_initial_yaw" value="0"/>
 	        <param name="robot_max_velocity" value="0.6"/>
-		<param name="config_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="person_max_velocity" value="0.4"/>
+		<param name="config_file" value="$(find pedlab)scenarios/corridors3.xml"/>
 		<param name="teleoperated_target" value="false"/>
 		<param name="false_negative_prob" value="0.5"/>
 		<param name="noisy_detections" value="true"/>
@@ -36,35 +37,22 @@
 
 	
 	<node pkg="teresa_wsbs" type="wsbs_planner" name="wsbs_planner" output="screen" respawn="false">
-		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="path_file" value="$(find pedlab)scenarios/corridors3.xml"/>
 		<param name="people_id" value="/people/navigation"/>
 		<param name="other_people_id" value="/people/navigation"/>
 		<param name="num_particles" value="500"/>
 		<param name="planner_mode" value="3"/>
   	</node>
 	
-	<!--
-	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen" required="true">
-		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
-		<param name="cmd_vel_id" type="str" value="cmd_vel"/>
-		<param name="xtion_id" type="str" value=""/>
-		<param name="people_id" value="/people/navigation"/>
-		<param name="use_leds" type="bool" value="false"/>
-        	<param name="heuristic_controller" value="false"/>
-        	<param name="use_estimated_target" value="true"/>
-		<param name="clicked_goals" value="false"/>
-		<param name="break_if_aborted" value="true"/>
-		<param name="break_if_finished" value="true"/>
- 	 </node>
-	-->
+	
 
   	<node pkg="teresa_wsbs" type="wsbs_controller" name="wsbs_controller" output="screen" required="true">
-		<param name="path_file" value="$(find teresa_wsbs)scenarios/upo_45.xml"/>
+		<param name="path_file" value="$(find pedlab)scenarios/corridors3.xml"/>
 		<param name="cmd_vel_id" type="str" value="cmd_vel"/>
 		<param name="xtion_id" type="str" value=""/>
 		<param name="people_id" value="/people/navigation"/>
 		<param name="heuristic_controller" value="false"/>
-        	<param name="use_estimated_target" value="false"/>
+        	<param name="use_estimated_target" value="true"/>
 		<param name="clicked_goals" value="false"/>
 		<param name="break_if_aborted" value="true"/>
 		<param name="break_if_finished" value="true"/>

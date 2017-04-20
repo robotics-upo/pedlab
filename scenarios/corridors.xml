@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+
+  <goal id ="A" x="7"  y="32" r="1"/> 	 
+  <goal id ="B" x="27" y="7"  r="1"/>
+  <goal id ="C" x="52" y="7"  r="1"/>
+  <goal id="E" x="52" y="32" r="1"/>
+ 
+ <waypoint id="D" x="27" y ="32" r="1"/>
+
+
+  <edge from="A" to="D"/>
+  <edge from="D" to="E"/>
+  <edge from="D" to="B"/>
+  <edge from="E" to="C"/>
+
+  <agent x="6" y="31" n="1" dx="0" dy="0" type="2">
+	<addwaypoint id="E"/>
+  </agent>
+
+  <agent x="52" y="32" n="2" dx="1" dy="1" type="1">
+   <addwaypoint id="A"/>
+   <addwaypoint id="E"/>
+  </agent>
+
+</scenario>

@@ -275,7 +275,7 @@ Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
 	pn.param<bool>("teleoperated_target",teleoperated_target,false);
 	pn.param<double>("people_average_vel",people_average_vel,0.9);
 	pn.param<double>("people_sd_vel",people_sd_vel,0.001);
-	pn.param<bool>("target_cyclic_goals",target_cyclic_goals,true);
+	pn.param<bool>("target_cyclic_goals",target_cyclic_goals,false);
 	pn.param<double>("people_detection_range",people_detection_range,8.0);
 	pn.param<bool>("noisy_detections",noisy_detections,false);
 	pn.param<double>("sd_noise",sd_noise,0.01); //0.25
