@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   cmake_modules
   tf
-  upo_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,10 +103,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES plab
    CATKIN_DEPENDS roscpp std_msgs tf nav_msgs
-   DEPENDS system_lib TinyXML 
+   DEPENDS TinyXML 
 )
 
 ###########
@@ -118,7 +117,6 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-    include
     /usr/local/include
     ${catkin_INCLUDE_DIRS}
     ${TinyXML_INCLUDE_DIRS}

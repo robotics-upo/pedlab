@@ -11,7 +11,10 @@
 #include <animated_marker_msgs/AnimatedMarkerArray.h>	
 #include <sensor_msgs/LaserScan.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <spencer_tracking_msgs/DetectedPersons.h>
+
+//#include <spencer_tracking_msgs/DetectedPersons.h>
+
+#include <people_msgs/People.h>
 #include <pedlab/PLabInfo.h>
 
 namespace plab
@@ -52,6 +55,7 @@ private:
 	bool transformPose(double& x, double& y, double& theta, 
 				const std::string& sourceFrameId, const std::string& targetFrameId) const;	
 	bool transformPoint(double& x, double& y, const std::string& sourceFrameId, const std::string& targetFrameId) const;
+        bool transformVelocity(double& vx, double& vy, const std::string& sourceFrameId, const std::string& targetFrameId) const;
 
 	void init(TiXmlNode *pParent, std::vector<AgentCfg>& agents, int& peopleCount);
 	void initAgents();	
@@ -76,6 +80,7 @@ private:
 	ros::Publisher scan360_pub;
 	bool perfect_tracking;
 	double scan_range_max;
+	ros::Publisher people_detected_markers_pub;
 	ros::Publisher people_detected_pub;
 	double sd_noise,sd_noise_theta,false_negative_prob;
 	bool noisy_detections;
@@ -245,6 +250,26 @@ bool Node::transformPoint(double& x, double& y, const std::string& sourceFrameId
 	return true;
 }
 
+inline
+bool Node::transformVelocity(double& vx, double& vy, const std::string& sourceFrameId, const std::string& targetFrameId) const
+{
+	tf::Stamped<tf::Vector3> vec,tfVec;
+
+	vec.setData(tf::Vector3(vx,vy,0));
+	vec.frame_id_ = sourceFrameId;
+	vec.stamp_ = ros::Time(0);
+	try
+	{
+		tf_listener.transformVector(targetFrameId, vec, tfVec);
+	} catch(std::exception &e) {
+		ROS_ERROR("%s",e.what());
+		return false;
+	}
+	vx = tfVec.getX(); 
+	vy = tfVec.getY();
+	return true;
+}
+
 
 inline
 Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
@@ -290,9 +315,11 @@ Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
 	odom_pub = pn.advertise<nav_msgs::Odometry>(odom_id, 1);
 	tf::StampedTransform map_trans(tf::Transform(tf::createQuaternionFromRPY(0.0,0.0,pose_initial_yaw), 
 					tf::Vector3(pose_initial_x,pose_initial_y,0.0)), ros::Time::now(), "map", "odom");
-	people_detected_pub = pn.advertise<visualization_msgs::MarkerArray>("/plab/markers/detected_people", 1);	
+
+	people_detected_markers_pub = pn.advertise<visualization_msgs::MarkerArray>("/plab/markers/detected_people", 1);	
 	people_markers_pub = pn.advertise<animated_marker_msgs::AnimatedMarkerArray>("/plab/markers/people", 1);
-	spencer_pub = pn.advertise<spencer_tracking_msgs::DetectedPersons>("/tracker_node/spencer_detections", 1);	
+	people_detected_pub = pn.advertise<people_msgs::People>("/people_detections", 1);	
+
 	ros::Rate r(freq);
 	ROS_INFO("Initiating...");
 	sfm::MAP;
@@ -395,11 +422,16 @@ bool Node::publishDetections(const ros::Time& current_time)
 	static std::uniform_real_distribution<double> false_negative(0,1);
 	static std::normal_distribution<double> noise_pos(0,sd_noise);	
 	static std::normal_distribution<double> noise_yaw(0,sd_noise_theta);
-	static int pose_seq_spencer=0;
-	spencer_tracking_msgs::DetectedPersons spencerPersons;
-	spencerPersons.header.seq = pose_seq_spencer++;
-	spencerPersons.header.stamp = current_time;
-	spencerPersons.header.frame_id = "odom";
+	
+	static int pose_seq=0;
+
+	people_msgs::People persons;
+	persons.header.seq = pose_seq++;
+	persons.header.stamp = current_time;
+	persons.header.frame_id = "odom";
+	
+	char buf[100];
+
 	for(unsigned i=1;i<agents.size();i++) {
 		if (peopleDetected[i]==0 || (noisy_detections && false_negative(gen)<false_negative_prob)) {
 			continue;
@@ -415,14 +447,30 @@ bool Node::publishDetections(const ros::Time& current_time)
 			y1+=noise_pos(gen);
 			theta1+=noise_yaw(gen);
 		}
-		spencer_tracking_msgs::DetectedPerson p;
-		p.detection_id = i-1;
-		p.confidence = 0.5;
-		p.modality = spencer_tracking_msgs::DetectedPerson::MODALITY_GENERIC_LASER_2D;
-		p.pose.pose.position.x = x1;
-		p.pose.pose.position.y = y1;
-		p.pose.pose.position.z = 0;
-		p.pose.pose.orientation.x = 0;
+
+		double vx1 = agents[i].velocity.getX();
+		double vy1 = agents[i].velocity.getY();
+		
+		if (!transformVelocity(vx1,vy1,"map","odom")) {
+			return false;
+		}
+		//TODO: add noise to velocity
+
+		people_msgs::Person p;
+		//p.detection_id = i-1;
+		sprintf(buf, "%d", i-1);
+		p.tags.push_back(buf);
+		p.name = "";
+		p.reliability = 0.5;
+		p.tagnames.push_back("LASER");
+		//p.modality = spencer_tracking_msgs::DetectedPerson::MODALITY_GENERIC_LASER_2D;
+		p.position.x = x1;
+		p.position.y = y1;
+		p.position.z = 0;
+		p.velocity.x = vx1;
+		p.velocity.y = vy1;
+		p.velocity.z = 0;
+		/*p.pose.pose.orientation.x = 0;
 		p.pose.pose.orientation.y = 0;
 		p.pose.pose.orientation.z = sin(theta1/2.0);
 		p.pose.pose.orientation.w = cos(theta1/2.0);
@@ -431,10 +479,12 @@ bool Node::publishDetections(const ros::Time& current_time)
 		p.pose.covariance[14] = 0.1*0.1;
 		p.pose.covariance[21] = 100000.0;
 		p.pose.covariance[28] = 100000.0;
-		p.pose.covariance[35] = 1.8*1.8;
-		spencerPersons.detections.push_back(p);				
+		p.pose.covariance[35] = 1.8*1.8;*/
+		persons.people.push_back(p);				
 	}
-	spencer_pub.publish(spencerPersons);	
+
+	if(persons.people.size() > 0)
+		people_detected_pub.publish(persons);	
 	
 
 	return true;
