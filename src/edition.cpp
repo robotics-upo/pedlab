@@ -37,6 +37,8 @@ private:
 	const unsigned *clicked;
 	bool delete_node;
 	unsigned counter;
+
+	double distance;
 	
 };
 
@@ -75,13 +77,19 @@ void EditionNode::pointReceived(const geometry_msgs::PointStamped::ConstPtr& poi
 		clicked=NULL;
 		return;
 	} 
+
+	nodes[counter++] = v;
+
+	//clicked = &(nodes[counter-1].first);
+
 	auto it = nodes.begin();
 	while (it != nodes.end()) {
-		if ( (it->second - v).norm()<0.5) {
+		if ( ((it->second - v).norm()<distance) && (it->first != counter-1)) {
 			if (delete_node) {
+				ROS_INFO("Deleting nodes");
 				auto it1=edges.begin();
 				while(it1!=edges.end()) {
-					if ( (it->second - nodes.at(it1->src)).norm()<0.5 || (it->second - nodes.at(it1->dst)).norm()<0.5 ) {
+					if ( (it->second - nodes.at(it1->src)).norm()<distance || (it->second - nodes.at(it1->dst)).norm()<distance ) {
 						it1 = edges.erase(it1);
 					} else {
 						++it1;
@@ -89,25 +97,28 @@ void EditionNode::pointReceived(const geometry_msgs::PointStamped::ConstPtr& poi
 				}
 				clicked=NULL;
 				nodes.erase(it);
-			} else if (clicked!=NULL) {
+			} else {
+				ROS_INFO("Adding edge");
 				Edge edge;
-				edge.src = *clicked;
+				edge.src = counter-1;
 				edge.dst = it->first;
 				edges.push_back(edge);
 				clicked=NULL;
-			} else {
-				clicked = &(it->first);
+			//} else {
+			//	ROS_INFO("Preparing clicked");
+			//	clicked = &(it->first);
 			}
-			delete_node=false;
-			return;
-		} else {
-			++it;
-		}	
+			//delete_node=false;
+			//return;
+		} //else {
+		
+		++it;
+		//}	
 	}
 	delete_node=false;
 	clicked=NULL;
 	
-	nodes[counter++] = v;
+	
 }
 
 
@@ -116,11 +127,12 @@ EditionNode::EditionNode(ros::NodeHandle& n, ros::NodeHandle& pn)
 : pn(pn),
   clicked(NULL),
   delete_node(false),
-  counter(1)
+  counter(0)
 {
 	double freq;
-	pn.param<std::string>("file",file,"");
+	pn.param<std::string>("file",file,"graph.xml");
 	pn.param<double>("freq",freq,15);
+	pn.param<double>("distance",distance,3.0);
 
 	ros::Subscriber point_sub = n.subscribe<geometry_msgs::PointStamped>("/clicked_point",1,&EditionNode::pointReceived,this);
 	ros::Publisher nodes_pub = pn.advertise<visualization_msgs::MarkerArray>("/plab/markers/edited_nodes", 1);	
