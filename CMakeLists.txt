@@ -10,8 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   roscpp
   std_msgs
+  geometry_msgs
   cmake_modules
-  tf
+  tf2
+  tf2_ros
   animated_marker_msgs
   lightsfm
 )
@@ -107,7 +109,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES plab
-   CATKIN_DEPENDS roscpp std_msgs tf nav_msgs 
+   CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf2 tf2_ros nav_msgs
    DEPENDS TinyXML lightsfm
 )
 

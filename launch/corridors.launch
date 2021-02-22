@@ -2,7 +2,9 @@
 
 <launch>
 	<master auto="start"/>
+
 	<node name="map_server" pkg="map_server" type="map_server" args="$(find pedlab)/scenarios/corridors.yaml" />
+
 	<node pkg="pedlab" type="pedlab" name="pedlab" output="screen" respawn="false">
 		<param name="pose_initial_x" value="7"/>
 		<param name="pose_initial_y" value="32"/>

@@ -1,6 +1,9 @@
 #include <ros/ros.h>
-#include <tf/transform_listener.h>
-#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <string>
 #include <lightsfm/sfm.hpp>
 #include <lightsfm/rosmap.hpp>
@@ -62,7 +65,8 @@ private:
   void init(TiXmlNode* pParent, std::vector<AgentCfg>& agents, int& peopleCount);
   void initAgents();
 
-  tf::TransformBroadcaster tf_broadcaster;
+  //tf::TransformBroadcaster tf_broadcaster;
+  tf2_ros::TransformBroadcaster tf_broadcaster;
   std::vector<sfm::Agent> agents;
 
   double pose_initial_x, pose_initial_y, pose_initial_yaw, robot_radius, person_radius,
@@ -73,7 +77,9 @@ private:
   utils::AStar a_star;
   bool target_cyclic_goals;
   int target_index;
-  tf::TransformListener tf_listener;
+  //tf::TransformListener tf_listener;
+  tf2_ros::Buffer tfBuffer;
+  tf2_ros::TransformListener* tf2_listener;
   ros::Publisher odom_pub;
   ros::Publisher people_markers_pub;
   std::vector<int> peopleDetected;
@@ -230,24 +236,33 @@ inline bool Node::transformPose(double& x, double& y, double& theta,
                                 const std::string& sourceFrameId,
                                 const std::string& targetFrameId) const
 {
-  tf::Stamped<tf::Pose> pose, tfPose;
-  pose.setData(tf::Pose(tf::createQuaternionFromRPY(0, 0, theta), tf::Vector3(x, y, 0)));
-  pose.frame_id_ = sourceFrameId;
-  pose.stamp_ = ros::Time(0);
+  geometry_msgs::PoseStamped target_pose;
+  target_pose.header.stamp = ros::Time(0);
+  target_pose.header.frame_id = sourceFrameId;
+  target_pose.pose.position.x = x;
+  target_pose.pose.position.y = y;
+  target_pose.pose.position.z = 0.0;
+  tf2::Quaternion q;
+  q.setRPY(0.0, 0.0, theta);
+  target_pose.pose.orientation = tf2::toMsg(q);
+
+  geometry_msgs::PoseStamped ps;
   try
   {
-    tf_listener.transformPose(targetFrameId, pose, tfPose);
+    ps = tfBuffer.transform(target_pose, targetFrameId);
   }
-  catch (std::exception& e)
+  catch (std::exception& e) //tf2::TransformException &e
   {
     ROS_ERROR("%s", e.what());
     return false;
   }
-  x = tfPose.getOrigin().getX();
-  y = tfPose.getOrigin().getY();
-  tf::Matrix3x3 m(tfPose.getRotation());
+
+  x = ps.pose.position.x;
+  y = ps.pose.position.y;
+  tf2::Quaternion quat;
+  tf2::fromMsg(ps.pose.orientation, quat);
   double roll, pitch;
-  m.getRPY(roll, pitch, theta);
+  tf2::Matrix3x3(quat).getRPY(roll, pitch, theta);
   return true;
 }
 
@@ -255,50 +270,20 @@ inline bool Node::transformPose(double& x, double& y, double& theta,
 inline bool Node::transformPoint(double& x, double& y, const std::string& sourceFrameId,
                                  const std::string& targetFrameId) const
 {
-  tf::Stamped<tf::Pose> pose, tfPose;
-  pose.setData(tf::Pose(tf::createQuaternionFromRPY(0, 0, 0), tf::Vector3(x, y, 0)));
-  pose.frame_id_ = sourceFrameId;
-  pose.stamp_ = ros::Time(0);
-  try
-  {
-    tf_listener.transformPose(targetFrameId, pose, tfPose);
-  }
-  catch (std::exception& e)
-  {
-    ROS_ERROR("%s", e.what());
-    return false;
-  }
-  x = tfPose.getOrigin().getX();
-  y = tfPose.getOrigin().getY();
-  return true;
+  double theta = 0.0;
+  return transformPose(x, y, theta, sourceFrameId, targetFrameId);
 }
 
 inline bool Node::transformVelocity(double& vx, double& vy, const std::string& sourceFrameId,
                                     const std::string& targetFrameId) const
 {
-  tf::Stamped<tf::Vector3> vec, tfVec;
-
-  vec.setData(tf::Vector3(vx, vy, 0));
-  vec.frame_id_ = sourceFrameId;
-  vec.stamp_ = ros::Time(0);
-  try
-  {
-    tf_listener.transformVector(targetFrameId, vec, tfVec);
-  }
-  catch (std::exception& e)
-  {
-    ROS_ERROR("%s", e.what());
-    return false;
-  }
-  vx = tfVec.getX();
-  vy = tfVec.getY();
-  return true;
+  double theta = 0.0;
+  return transformPose(vx, vy, theta, sourceFrameId, targetFrameId);
 }
 
 
 inline Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
   : gen(std::chrono::system_clock::now().time_since_epoch().count())
-  , tf_listener(ros::Duration(10))
 {
   double freq, dt;
   bool publish_map_trans;
@@ -333,15 +318,30 @@ inline Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
   pn.param<double>("target_force_factor_desired", target_force_factor_desired, 4.0);
 
   pn.param<bool>("perfect_tracking", perfect_tracking, false);
+
+  tf2_listener = new tf2_ros::TransformListener(tfBuffer);
+
   ros::Subscriber cmd_vel_target_sub;
   ros::Subscriber cmd_vel_sub =
       n.subscribe<geometry_msgs::Twist>(cmd_vel_id, 1, &Node::robotCmdVelReceived, this);
   scan360_pub = pn.advertise<sensor_msgs::LaserScan>(scan360_id, 1);
   odom_pub = pn.advertise<nav_msgs::Odometry>(odom_id, 1);
-  tf::StampedTransform map_trans(
-      tf::Transform(tf::createQuaternionFromRPY(0.0, 0.0, pose_initial_yaw),
-                    tf::Vector3(pose_initial_x, pose_initial_y, 0.0)),
-      ros::Time::now(), "map", "odom");
+  //tf::StampedTransform map_trans(
+  //    tf::Transform(tf::createQuaternionFromRPY(0.0, 0.0, pose_initial_yaw),
+  //                  tf::Vector3(pose_initial_x, pose_initial_y, 0.0)),
+  //    ros::Time::now(), "map", "odom");
+
+  geometry_msgs::TransformStamped map_trans;
+  map_trans.header.stamp = ros::Time::now();
+  map_trans.header.frame_id = "map";
+  map_trans.child_frame_id = "odom";
+  map_trans.transform.translation.x = pose_initial_x;
+  map_trans.transform.translation.y = pose_initial_y;
+  map_trans.transform.translation.z = 0.0;
+  tf2::Quaternion q;
+  q.setRPY(0.0, 0.0, pose_initial_yaw);
+  map_trans.transform.rotation = tf2::toMsg(q);
+
 
   people_detected_markers_pub =
       pn.advertise<visualization_msgs::MarkerArray>("/plab/markers/detected_people", 1);
@@ -380,7 +380,7 @@ inline Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
   while (n.ok())
   {
     current_time = ros::Time::now();
-    map_trans.stamp_ = current_time;
+    map_trans.header.stamp = current_time;
     tf_broadcaster.sendTransform(map_trans);
     dt = (current_time - previous_time).toSec();
     previous_time = current_time;
@@ -563,8 +563,10 @@ inline bool Node::publishPeople(const ros::Time& current_time)
       marker.color.g = 0.412;
       marker.color.b = 0.255;
     }
-    marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        M_PI * 0.5, 0.0, agents[i].yaw.toRadian() + M_PI * 0.5);
+
+    tf2::Quaternion myq;
+    myq.setRPY(M_PI * 0.5, 0.0, agents[i].yaw.toRadian() + M_PI * 0.5);
+    marker.pose.orientation = tf2::toMsg(myq);
     marker.animation_speed = agents[i].velocity.norm() * 0.7;
     marker_array.markers.push_back(marker);
   }
@@ -589,7 +591,9 @@ inline bool Node::publishOdom(const ros::Time& current_time)
   odom.pose.pose.position.x = x;
   odom.pose.pose.position.y = y;
   odom.pose.pose.position.z = 0.0;
-  odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, yaw);
+  tf2::Quaternion myq;
+  myq.setRPY(0, 0, yaw);
+  odom.pose.pose.orientation = tf2::toMsg(myq);
   odom.twist.twist.linear.x = agents[0].linearVelocity;
   odom.twist.twist.linear.y = 0.0;
   odom.twist.twist.linear.z = 0.0;
