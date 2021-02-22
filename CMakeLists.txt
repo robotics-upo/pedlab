@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   cmake_modules
   tf
+  animated_marker_msgs
+  lightsfm
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,8 +107,8 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES plab
-   CATKIN_DEPENDS roscpp std_msgs tf nav_msgs
-   DEPENDS TinyXML 
+   CATKIN_DEPENDS roscpp std_msgs tf nav_msgs 
+   DEPENDS TinyXML lightsfm
 )
 
 ###########

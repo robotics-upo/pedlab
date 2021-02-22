@@ -2,14 +2,14 @@
 
 <launch>
 	<master auto="start"/>
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find pedlab)scenarios/corridors.yaml" />
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find pedlab)/scenarios/corridors.yaml" />
 	<node pkg="pedlab" type="pedlab" name="pedlab" output="screen" respawn="false">
 		<param name="pose_initial_x" value="7"/>
 		<param name="pose_initial_y" value="32"/>
 		<param name="pose_initial_yaw" value="0"/>
 	        <param name="robot_max_velocity" value="0.6"/>
 		<param name="person_max_velocity" value="0.4"/>
-		<param name="config_file" value="$(find pedlab)scenarios/corridors.xml"/>
+		<param name="config_file" value="$(find pedlab)/scenarios/corridors.xml"/>
 		<param name="teleoperated_target" value="false"/>
 		<param name="false_negative_prob" value="0.5"/>
 		<param name="noisy_detections" value="true"/>

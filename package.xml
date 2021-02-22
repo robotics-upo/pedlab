@@ -45,9 +45,12 @@
   <build_depend>tf</build_depend>
   <build_depend>nav_msgs</build_depend> 
   <build_depend>tinyxml</build_depend>
+  <build_depend>lightsfm</build_depend>
   <build_depend>cmake_modules</build_depend>
   <build_depend>person_msgs</build_depend>
+  <build_depend>animated_marker_msgs</build_depend>
   <run_depend>tinyxml</run_depend>
+  <run_depend>lightsfm</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>nav_msgs</run_depend> 	
   <run_depend>std_msgs</run_depend>

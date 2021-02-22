@@ -25,7 +25,7 @@ The persons are affected by the robot and other persons using the social force m
 The following topics are published. The names can be configured (see below)
 
 * /scan360: <sensor_msgs::LaserScan> simulated 360º robot laser
-* /odom: Robot odometry
+* /odom: <nav_msgs::Oodometry> Robot odometry
 * /people\_detections <people_msgs::People>
 
 
@@ -47,11 +47,14 @@ The following topics are published. The names can be configured (see below)
 
 * Detections are provided as People messages: http://wiki.ros.org/people_msgs
 
-# External Dependencies
+* Social Force Model library, lightsfm https://github.com/robotics-upo/lightsfm/tree/refactored (branch: refactored)
 
 
-* LightSFM library: https://github.com/robotics-upo/lightsfm
+# Example launch file
 
+```sh
+roslaunch pedlab corridors.launch
+```
 
 
 
