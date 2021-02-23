@@ -41,7 +41,7 @@ The following topics are published. The names can be configured (see below)
 ## ROS params
 
 ### Scenario configuration
-* *config_file*: route and name of the scenario configuration file (see section [Simulation configuration files](# Simulation configuration files)).
+* *config_file*: route and name of the scenario configuration file (see section "Simulation configuration files").
 * *freq*: Execution frequency of the simulation and the publication of topics (Default: 15 Hz).
 
 ### Laser scan configuration
