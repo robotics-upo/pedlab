@@ -40,21 +40,47 @@ The following topics are published. The names can be configured (see below)
 
 ## ROS params
 
+### Scenario configuration
+* *config_file*: route and name of the scenario configuration file.
+* *freq*: Execution frequency of the simulation and the publication of topics (Default: 15 Hz).
 
-* *freq*: 
-* *scan360\_id*: topic name for simulated laser
-* *config_file*:
+### Laser scan configuration
+* *scan360\_id*: topic name for simulated laser (default: "/scan360").
+* *scan360_readings*: number of beams of the simulated laser scan (default: 1440).
+* *scan\_range\_max*: maximum range distance of the scan (default: 10 m).
+
+### Robot configuration
 * *cmd\_vel_id*: topic name to control the robot
-* *odom_id*: 
-* *cmd\_vel\_target\_id*:
-* *publish\_map\_trans*:
+* *robot\_radius*:
+* *robot\_max\_velocity*:
 * *pose\_initial\_x*:
 * *pose\_initial\_y*:
 * *pose\_initial\_yaw*:
+* *odom_id*: 
+
+### Simulated people configuration
+* *teleoperated\_target*:
+* *cmd\_vel\_target\_id*:
+* *person\_radius*:
+* *people\_average\_vel*:
+* *people\_sd\_vel*:
+* *target\_cyclic\_goals*:
+* *target\_force\_factor\_desired*:
+
+
+### Uncertainty configuration
+* *people\_detection\_range*:
+* *noisy\_detections*:
+* *sd\_noise*:
+* *sd\_noise\_theta*:
+* *false\_negative\_prob*:
+* *perfect\_tracking*:
 
 
 
-# EDITION NODE
+
+
+# Edition node
 
 A secondary ROS node has been also implemented as a tool for generation of scenarios ...
 

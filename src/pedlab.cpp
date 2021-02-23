@@ -286,7 +286,7 @@ inline Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
   : gen(std::chrono::system_clock::now().time_since_epoch().count())
 {
   double freq, dt;
-  bool publish_map_trans;
+  //bool publish_map_trans; //parameters not used
   int scan360_readings;
   double target_force_factor_desired;
   ros::Time current_time, previous_time;
@@ -297,7 +297,7 @@ inline Node::Node(ros::NodeHandle& n, ros::NodeHandle& pn)
   pn.param<std::string>("cmd_vel_id", cmd_vel_id, "/cmd_vel");
   pn.param<std::string>("odom_id", odom_id, "/odom");
   pn.param<std::string>("cmd_vel_target_id", cmd_vel_target_id, "/target/cmd_vel");
-  pn.param<bool>("publish_map_trans", publish_map_trans, true);
+  //pn.param<bool>("publish_map_trans", publish_map_trans, true);
   pn.param<double>("pose_initial_x", pose_initial_x, 0);
   pn.param<double>("pose_initial_y", pose_initial_y, 0);
   pn.param<double>("pose_initial_yaw", pose_initial_yaw, 0);
