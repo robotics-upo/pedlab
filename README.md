@@ -16,6 +16,31 @@ The persons are affected by the robot and other persons using the social force m
 
 # Simulation configuration files
 
+a XML file must be provided to define the number of simulated pedestrians in the scenario and the goal positions that they must reach.
+
+A simple example file is shown next:
+
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+
+  <!-- definition of goals and itermediate points-->
+  <goal id ="A" x="7"  y="32" r="1"/> 	 
+  <goal id ="B" x="27" y="7"  r="1"/>
+  <waypoint id="D" x="27" y ="32" r="1"/>
+
+  <!-- paths between goals -->
+  <edge from="A" to="D"/>
+  <edge from="D" to="B"/>
+
+  <!-- pedestrian with initial position and goals to reach -->
+  <agent x="6" y="31" n="1" dx="0" dy="0" type="2">
+    <addwaypoint id="A"/>
+    <addwaypoint id="B"/>
+  </agent>
+
+</scenario>
+```
 
 
 # ROS API
