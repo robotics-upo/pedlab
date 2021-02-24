@@ -147,7 +147,7 @@ A secondary ROS node has been also implemented as a tool for generation of scena
 ```sh
 roslaunch pedlab corridors.launch
 ```
-This will launch a corridor scenario where a group of two pedestrians and a target pedestrian (accompaning the robot) are launched.
+This will launch a corridor scenario where a group of two pedestrians and a target pedestrian (accompanying the robot) are launched.
 The robot is represented by the TF "base_link", and it is a regular differential robot that can be controlled through the topic "/cmd_vel".
 
 
