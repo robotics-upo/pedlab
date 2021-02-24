@@ -15,7 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   tf2_ros
   animated_marker_msgs
-  lightsfm
 )
 
 ## System dependencies are found with CMake's conventions
@@ -110,7 +109,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES plab
    CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf2 tf2_ros nav_msgs
-   DEPENDS TinyXML lightsfm
+   DEPENDS TinyXML
 )
 
 ###########
@@ -121,7 +120,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-    /usr/local/include
+    /usr/local/include  #to find lightsfm
     ${catkin_INCLUDE_DIRS}
     ${TinyXML_INCLUDE_DIRS}
 )

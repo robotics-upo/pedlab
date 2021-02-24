@@ -5,9 +5,10 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <string>
+#include <tinyxml.h>
 #include <lightsfm/sfm.hpp>
-#include <lightsfm/rosmap.hpp>
-#include <lightsfm/astar.hpp>
+#include "rosmap.hpp"
+#include "astar.hpp"
 #include <nav_msgs/Odometry.h>
 #include <random>
 #include <chrono>
@@ -23,7 +24,7 @@
 namespace plab
 {
 const double PERSON_MESH_SCALE = (2.0 / 8.5 * 1.8) * 0.9;
-const int TYPE_ROBOT = 0;
+//const int TYPE_ROBOT = 0;
 const int TYPE_PEDESTRIAN = 1;
 const int TYPE_TARGET = 2;
 

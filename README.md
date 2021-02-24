@@ -16,9 +16,9 @@ The persons are affected by the robot and other persons using the social force m
 
 # Simulation configuration files
 
-a XML file must be provided to define the number of simulated pedestrians in the scenario and the goal positions that they must reach.
+The definition of the number of simulated pedestrians in the scenario and the goal positions that they must reach are provided through a simple XML file.
 
-A simple example file is shown next:
+An example file is shown next:
 
 ```html
 <?xml version="1.0" encoding="UTF-8"?>
@@ -34,13 +34,30 @@ A simple example file is shown next:
   <edge from="D" to="B"/>
 
   <!-- pedestrian with initial position and goals to reach -->
-  <agent x="6" y="31" n="1" dx="0" dy="0" type="2">
+  <agent x="6" y="31" n="2" dx="0" dy="0" type="1">
     <addwaypoint id="A"/>
     <addwaypoint id="B"/>
   </agent>
 
 </scenario>
 ```
+
+The configuration must be enclosed between the tags ```html <scenario></scenario>```.
+
+First, the different goals that the pedestrians must be reach can be indicated through the tag ```html <goal/>``` with the arguments:
+* *id*, identifier of the goal.
+* position in the map, *x* coordinate (m) and *y* coordinate (m).
+* Admisible distance from the goal point to consider that the goal has been reached *r* (m).
+
+With the tag ```html <waypoint/>``` is possible to add intermediate goals that can be used as points that the agents must visit to in the way to reach their goals.
+
+Secondly, the tag ```html <edge/>``` is used to connect the different goals and waypoints similarly to a graph. This way, the agents must follow the defined edges to reach the different goals.
+
+Finally, each agent in the scenario is indicated by the tag ```html <agent></agent>```, with the following arguments:
+* Initial position in the map indicated by the arguments *x* and *y*.
+* Arguments *dx* and *dy* employed to feed an uniform distribution to randomly vary the position of the agent.
+* Type of agent, that can be *1*: regular pedestrian, or *2*: target pedestrian (a pedestrian that forms a walking group with the robot).
+Moreover, the goals that the agent must try to reach are indicated by the *id* argument in the tag ```html <addwaypoint/>```
 
 
 # ROS API
@@ -130,7 +147,8 @@ A secondary ROS node has been also implemented as a tool for generation of scena
 ```sh
 roslaunch pedlab corridors.launch
 ```
-
+This will launch a corridor scenario where a group of two pedestrians and a target pedestrian (accompaning the robot) are launched.
+The robot is represented by the TF "base_link", and it is a regular differential robot that can be controlled through the topic "/cmd_vel".
 
 
 
