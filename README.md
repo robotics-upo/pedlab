@@ -12,7 +12,7 @@ The node provides a simulation of a robot and a set of people using a Social For
 
 ## Person simulation
 
-The persons are affected by the robot and other persons using the social force model
+The persons are affected by the robot and other persons using the [Social Force Model](https://github.com/robotics-upo/lightsfm/tree/refactored)
 
 # Simulation configuration files
 
@@ -92,6 +92,9 @@ The following topics are published. The names can be configured (see below)
 * *scan\_range\_max*: maximum range distance of the scan (default: 10 m).
 
 ### Robot configuration
+
+The simulated robot is a differential robot with circular footprint. 
+
 * *cmd\_vel_id*: topic name to control the robot (default:"/cmd_vel").
 * *robot\_radius*: radius of the circumference that circumscribes the robot footprint (default: 0.3 m).
 * *robot\_max\_velocity*: robot maximum velocity allowed (default: 0.6 m/s).
@@ -111,14 +114,12 @@ The following topics are published. The names can be configured (see below)
 
 
 ### Uncertainty configuration
-* *people\_detection\_range*:
-* *noisy\_detections*:
-* *sd\_noise*:
-* *sd\_noise\_theta*:
-* *false\_negative\_prob*:
-* *perfect\_tracking*:
-
-
+* *people\_detection\_range*: maximum detection distance of a pedestrian (default: 8.0 m).
+* *noisy\_detections*: if True, some noise is added to the position and orientation of the pedestrians detected (default: false).
+* *sd\_noise*: standard deviation of the normal distribution that is employed to add noise to the position of the people detected (default: 0.01 m).
+* *sd\_noise\_theta*: standard deviation of the normal distribution that is employed to add noise to the orientation of people detected (default: 1 rad).
+* *false\_negative\_prob*: if *noisy\_detections* is True, this probability is employed to randomly remove people detections (default: 0.1).
+* *perfect\_tracking*: if True, no noise and false negative detections are added to the people detected (default: false).
 
 
 
