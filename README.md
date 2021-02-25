@@ -124,6 +124,23 @@ The simulated robot is a differential robot with circular footprint.
 * *perfect\_tracking*: if True, no noise and false negative detections are added to the people detected (default: false).
 
 
+# ROS Dependencies
+ 
+* Animated Markers for the markers for persons in RViz: https://github.com/srl-freiburg/animated_markers
+
+* Detections are provided as People messages: http://wiki.ros.org/people_msgs
+
+* Social Force Model library, lightsfm https://github.com/robotics-upo/lightsfm/tree/refactored (branch: refactored)
+
+
+# Example launch file
+
+```sh
+roslaunch pedlab corridors.launch
+```
+This will launch a corridor scenario where a group of two pedestrians and a target pedestrian (accompanying the robot) are launched.
+The robot is represented by the TF "base_link", and it is a regular differential robot that can be controlled through the topic "/cmd_vel".
+
 
 # Edition node
 
@@ -160,22 +177,9 @@ Finally, the desired agents must be added manually to the configuration file cre
 roslaunch pedlab editor_example.launch
 ```
 
-# ROS Dependencies
- 
-* Animated Markers for the markers for persons in RViz: https://github.com/srl-freiburg/animated_markers
-
-* Detections are provided as People messages: http://wiki.ros.org/people_msgs
-
-* Social Force Model library, lightsfm https://github.com/robotics-upo/lightsfm/tree/refactored (branch: refactored)
 
 
-# Example launch file
 
-```sh
-roslaunch pedlab corridors.launch
-```
-This will launch a corridor scenario where a group of two pedestrians and a target pedestrian (accompanying the robot) are launched.
-The robot is represented by the TF "base_link", and it is a regular differential robot that can be controlled through the topic "/cmd_vel".
 
 
 
