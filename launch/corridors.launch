@@ -9,7 +9,7 @@
 		<param name="pose_initial_x" value="7"/>
 		<param name="pose_initial_y" value="32"/>
 		<param name="pose_initial_yaw" value="0"/>
-	        <param name="robot_max_velocity" value="0.6"/>
+		<param name="robot_max_velocity" value="0.6"/>
 		<param name="person_max_velocity" value="0.4"/>
 		<param name="config_file" value="$(find pedlab)/scenarios/corridors.xml"/>
 		<param name="teleoperated_target" value="false"/>

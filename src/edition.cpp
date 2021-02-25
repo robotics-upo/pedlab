@@ -44,6 +44,7 @@ private:
 
 void EditionNode::saveFile()
 {
+  std::cout << "Saving file: " << file.c_str() << " ..." << std::endl;
   std::ofstream stream;
   stream.open(file.c_str());
   stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -144,6 +145,8 @@ inline EditionNode::EditionNode(ros::NodeHandle& n, ros::NodeHandle& pn)
       pn.advertise<visualization_msgs::MarkerArray>("/plab/markers/edited_nodes", 1);
   ros::Publisher edges_pub =
       pn.advertise<visualization_msgs::Marker>("/plab/markers/edited_edges", 1);
+
+
   ros::Rate r(freq);
   while (n.ok())
   {
@@ -168,6 +171,7 @@ inline EditionNode::EditionNode(ros::NodeHandle& n, ros::NodeHandle& pn)
       marker.scale.z = 0.5;
       marker.pose.position.x = it->second.getX();
       marker.pose.position.y = it->second.getY();
+      marker.pose.orientation.w = 1.0;
       node_markers.markers.push_back(marker);
     }
     nodes_pub.publish(node_markers);
@@ -180,6 +184,7 @@ inline EditionNode::EditionNode(ros::NodeHandle& n, ros::NodeHandle& pn)
     marker.color.r = 0.0;
     marker.color.g = 0.0;
     marker.color.b = 1.0;
+    marker.pose.orientation.w = 1.0;
     marker.lifetime = ros::Duration(0.5);
     marker.scale.x = 0.1;
     for (auto it = edges.begin(); it != edges.end(); ++it)
@@ -192,7 +197,8 @@ inline EditionNode::EditionNode(ros::NodeHandle& n, ros::NodeHandle& pn)
       marker.points.push_back(p0);
       marker.points.push_back(p1);
     }
-    edges_pub.publish(marker);
+    if(!edges.empty())
+      edges_pub.publish(marker);
 
     r.sleep();
     ros::spinOnce();

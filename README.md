@@ -3,6 +3,8 @@ A custom pedestrian simulator.
 
 The node provides a simulation of a robot and a set of people using a Social Force Model.
 
+It is based on ROS and uses RViz for visualization.
+
 **[DOCUMENTATION UNDER CONSTRUCTION]**
 
 ## Robot simulation
@@ -125,14 +127,38 @@ The simulated robot is a differential robot with circular footprint.
 
 # Edition node
 
-A secondary ROS node has been also implemented as a tool for generation of scenarios ...
+A secondary ROS node has been also implemented as a simple tool for creating scenario configuration files.
+It makes use of [RViz](http://wiki.ros.org/rviz) and [map\_server](http://wiki.ros.org/map_server).
+With the map\_server an existing map can be loaded and published in ROS. Or even a blank map with the desired dimensions can be employed.
+Then, the map can be visualized in RViz. The map is used as a reference to build a new simulation scenario.
+To do it, the "publish point" tool of RViz is employed. By clicking on the desired map location in RViz, a new node (pedestrian goal) will be created. Nodes that are closer than an indicated distance threshold will be automatically linked and an edge between them will be created. 
+
+Once the edition node is finished (CTRL+c shortkey), the configuration file is saved. 
+Finally, the desired agents must be added manually to the configuration file created. 
+
 
 ## ROS API
 
 ### Subscribed topics
+
+* */clicked\_point*: <geometry_msgs::PointStamped>. Point coordinates published by RViz "publish_point" tool.
+
 ### Published topics
+
+* */plab/markers/edited\_nodes*: <visualization_msgs::MarkerArray> spheres representing the pedestrian goals in the scenario.
+* */plab/markers/edited\_edges*: <visualization_msgs::Marker> list of lines (edges) that join the goal nodes and represent the paths to reach the goals.
+
 ### ROS params
 
+* *file*: route and name of the configuration file that is going to be created (default: graph.xml)
+* *freq*: frequency of topic publication (default: 15 Hz)
+* *distance*: maximum distance between nodes to be connected by an edge (default: 3.0 m)
+
+### Example launch file
+
+```sh
+roslaunch pedlab editor_example.launch
+```
 
 # ROS Dependencies
  
