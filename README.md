@@ -5,7 +5,6 @@ The node provides a simulation of a robot and a set of people using a Social For
 
 It is based on ROS and uses RViz for visualization.
 
-**[DOCUMENTATION UNDER CONSTRUCTION]**
 
 ## Robot simulation
 * The robot offers an interface to be controlled
