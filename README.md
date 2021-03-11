@@ -13,7 +13,7 @@ It is based on ROS and uses RViz for visualization.
 
 ## Person simulation
 
-The persons are affected by the robot and other persons using the [Social Force Model](https://github.com/robotics-upo/lightsfm/tree/refactored)
+The persons are affected by the robot and other persons using the [Social Force Model](https://github.com/robotics-upo/lightsfm)
 
 # Simulation configuration files
 
@@ -111,7 +111,7 @@ The simulated robot is a differential robot with circular footprint.
 * *people\_average\_vel*: average velocity of the simulated pedestrians (default: 0.9 m/s).
 * *people\_sd\_vel*: standard deviation of the normal distribution that represents the pedestrian velocities (default: 0.001 m/s).
 * *target\_cyclic\_goals*: it indicates whether the pedestrian used as target (for instance to be accompanied by the robot) performs a cyclic movements among its destination goals (default: false).
-* *target\_force\_factor\_desired*: factor of the desired force to reach the goal for the simulated pedestrian marked as target (see the [Social Force Model](https://github.com/robotics-upo/lightsfm/tree/refactored)) (default: 4.0).
+* *target\_force\_factor\_desired*: factor of the desired force to reach the goal for the simulated pedestrian marked as target (see the [Social Force Model](https://github.com/robotics-upo/lightsfm)) (default: 4.0).
 
 
 ### Uncertainty configuration
@@ -129,7 +129,7 @@ The simulated robot is a differential robot with circular footprint.
 
 * Detections are provided as People messages: http://wiki.ros.org/people_msgs
 
-* Social Force Model library, lightsfm https://github.com/robotics-upo/lightsfm/tree/refactored (branch: refactored)
+* Social Force Model library, lightsfm https://github.com/robotics-upo/lightsfm
 
 
 # Example launch file
