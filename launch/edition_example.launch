@@ -1,0 +1,16 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+	<master auto="start"/>
+
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find pedlab)/scenarios/corridors.yaml" />
+
+	<node pkg="pedlab" type="edition" name="pedlab_edition" output="screen" respawn="false">
+		<param name="file" value="$(find pedlab)/scenarios/corridors_2.xml"/>
+		<param name="freq" value="15"/>
+		<param name="distance" value="5.0"/>
+	</node>
+	
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find pedlab)/rviz/edition.rviz"/>
+
+</launch>

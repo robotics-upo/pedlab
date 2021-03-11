@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -56,22 +56,13 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_link:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_link:
-              {}
+        {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -114,20 +105,20 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Class: animated_marker_rviz_plugin/AnimatedMarkerArray
+    - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /plab/markers/people
-      Name: AnimatedMarkerArray
+      Marker Topic: /plab/markers/edited_edges
+      Name: Edges
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /plab/markers/detected_people
-      Name: MarkerArray
+      Marker Topic: /plab/markers/edited_nodes
+      Name: Nodes
       Namespaces:
-        {}
+        node_markers: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -158,15 +149,15 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 43.38420104980469
+      Distance: 72.14804077148438
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 25.4444580078125
-        Y: 12.618961334228516
+        X: 30.06951141357422
+        Y: 3.1056747436523438
         Z: 5.511999916052446e-6
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
