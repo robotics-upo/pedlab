@@ -5,6 +5,8 @@ The node provides a simulation of a robot and a set of people using a Social For
 
 It is based on ROS and uses RViz for visualization.
 
+It has been tested in ROS distro MELODIC and KINETIC. The animated_markers dependency can be problematic in NOETIC distro.
+
 
 ## Robot simulation
 * The robot offers an interface to be controlled
